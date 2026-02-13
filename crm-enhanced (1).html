@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales CRM - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0f766e;
+            --primary-light: #14b8a6;
+            --primary-dark: #115e59;
+            --accent: #f59e0b;
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --sidebar-width: 260px;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, #0f766e 0%, #115e59 100%);
+            color: white;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            padding: 0 1.5rem 2rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section-title {
+            padding: 0 1.5rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.6;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-item.active {
+            background: rgba(255,255,255,0.15);
+            border-left-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            max-width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            width: 300px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .trend-up { color: var(--success); }
+        .trend-down { color: var(--danger); }
+
+        /* Content Sections */
+        .content-section {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+
+        .data-table thead {
+            background: var(--bg-main);
+        }
+
+        .data-table th {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        .data-table tbody tr {
+            transition: background 0.2s;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--bg-main);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .badge-actual { background: #d1fae5; color: #065f46; }
+        .badge-forecast { background: #fef3c7; color: #92400e; }
+        .badge-new { background: #dbeafe; color: #1e40af; }
+        .badge-renewal { background: #e0e7ff; color: #3730a3; }
+        .badge-recurring { background: #f3e8ff; color: #6b21a8; }
+        .badge-paid { background: #d1fae5; color: #065f46; }
+        .badge-not-paid { background: #fee2e2; color: #991b1b; }
+        .badge-agreement { background: #dbeafe; color: #1e40af; }
+        .badge-proposal { background: #fef3c7; color: #92400e; }
+        .badge-won { background: #d1fae5; color: #065f46; }
+        .badge-lost { background: #fee2e2; color: #991b1b; }
+
+        /* Avatar */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: white;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .contact-details h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.125rem;
+        }
+
+        .contact-details p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-main);
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        /* Action Buttons */
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-main);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .view-content {
+            display: none;
+        }
+
+        .view-content.active {
+            display: block;
+        }
+
+        .value-text {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 220px;
+            }
+            
+            .main-content {
+                margin-left: 220px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .data-table {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row,
+            .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box input {
+                width: 200px;
+            }
+        }
+
+        .currency-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-left: 0.25rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                Sales<span>CRM</span>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Main</div>
+                <div class="nav-item active" data-view="dashboard">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </div>
+                <div class="nav-item" data-view="contacts">
+                    <span class="nav-icon">👥</span>
+                    <span>Contacts</span>
+                </div>
+                <div class="nav-item" data-view="deals">
+                    <span class="nav-icon">💼</span>
+                    <span>Deals</span>
+                </div>
+                <div class="nav-item" data-view="tasks">
+                    <span class="nav-icon">✓</span>
+                    <span>Tasks</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Analytics</div>
+                <div class="nav-item" data-view="reports">
+                    <span class="nav-icon">📈</span>
+                    <span>Reports</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">Settings</div>
+                <div class="nav-item" data-view="settings">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard View -->
+            <div class="view-content active" id="dashboard-view">
+                <div class="header">
+                    <h1>Dashboard</h1>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" placeholder="Search deals, contacts...">
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('add-deal')">
+                            <span>+</span> Add Deal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" id="total-pipeline">AED 0</div>
+                                <div class="stat-label">Total Pipeline Value</div>
+                                <div class="stat-trend trend-up">
+                                    ↑ 12% from last quarter
+                                </div>
+                            </div>
+                            <div class="stat-icon" style="background: #dbeafe; color: #1e40af;">
+                                💰
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" id="active-deals">0</div>
+                                <div class="stat-label">Active Deals</div>
+                                <div class="stat-trend trend-up">
+                                    ↑ 8% from last quarter
+                                </div>
+                            </div>
+                            <div class="stat-icon" style="background: #fef3c7; color: #92400e;">
+                                💼
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" id="arr-forecast">AED 0</div>
+                                <div class="stat-label">ARR Forecast</div>
+                                <div class="stat-trend trend-up">
+                                    ↑ 24% from last quarter
+                                </div>
+                            </div>
+                            <div class="stat-icon" style="background: #d1fae5; color: #065f46;">
+                                📈
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div>
+                                <div class="stat-value" id="pending-tasks">0</div>
+                                <div class="stat-label">Pending Tasks</div>
+                                <div class="stat-trend trend-down">
+                                    ↓ 3% from last quarter
+                                </div>
+                            </div>
+                            <div class="stat-icon" style="background: #fee2e2; color: #991b1b;">
+                                ✓
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Deals -->
+                <div class="content-section">
+                    <div class="section-header">
+                        <h2 class="section-title">Recent Deals</h2>
+                        <button class="btn btn-secondary" onclick="switchView('deals')">View All</button>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Quarter</th>
+                                    <th>Opportunity</th>
+                                    <th>Country</th>
+                                    <th>Type</th>
+                                    <th>Stage</th>
+                                    <th>Indoor RVMs</th>
+                                    <th>Outdoor RVMs</th>
+                                    <th>Pipeline Value</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-deals-body">
+                                <tr>
+                                    <td colspan="9">
+                                        <div class="empty-state">
+                                            <div class="empty-state-icon">💼</div>
+                                            <h3>No deals yet</h3>
+                                            <p>Start by adding your first deal</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deals View -->
+            <div class="view-content" id="deals-view">
+                <div class="header">
+                    <h1>Deals Pipeline</h1>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" placeholder="Search deals..." id="deal-search">
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('add-deal')">
+                            <span>+</span> Add Deal
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Stage</label>
+                        <select id="deal-stage-filter" onchange="filterDeals()">
+                            <option value="all">All Stages</option>
+                            <option value="Agreement">Agreement</option>
+                            <option value="Proposal">Proposal</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Type</label>
+                        <select id="deal-type-filter" onchange="filterDeals()">
+                            <option value="all">All Types</option>
+                            <option value="New">New</option>
+                            <option value="Renewal">Renewal</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Forecast Status</label>
+                        <select id="deal-forecast-filter" onchange="filterDeals()">
+                            <option value="all">All</option>
+                            <option value="Actual">Actual</option>
+                            <option value="Forecast">Forecast</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Quarter</th>
+                                    <th>Opportunity</th>
+                                    <th>Country</th>
+                                    <th>Renewal/New</th>
+                                    <th>Subscription Type</th>
+                                    <th>Forecast Status</th>
+                                    <th>Payment Status</th>
+                                    <th>Stage</th>
+                                    <th>Indoor RVMs</th>
+                                    <th>Outdoor RVMs</th>
+                                    <th>Rental/Month (Indoor)</th>
+                                    <th>Rental/Month (Outdoor)</th>
+                                    <th>Contract Duration</th>
+                                    <th>Pipeline Value</th>
+                                    <th>ARR Actual</th>
+                                    <th>ARR Forecast</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deals-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts View -->
+            <div class="view-content" id="contacts-view">
+                <div class="header">
+                    <h1>Contacts</h1>
+                    <div class="header-actions">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" placeholder="Search contacts..." id="contact-search">
+                        </div>
+                        <button class="btn btn-primary" onclick="openModal('add-contact')">
+                            <span>+</span> Add Contact
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Contact</th>
+                                <th>Company</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contacts-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tasks View -->
+            <div class="view-content" id="tasks-view">
+                <div class="header">
+                    <h1>Tasks</h1>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="openModal('add-task')">
+                            <span>+</span> Add Task
+                        </button>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Task</th>
+                                <th>Related Deal</th>
+                                <th>Priority</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tasks-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div class="view-content" id="reports-view">
+                <div class="header">
+                    <h1>Sales Reports</h1>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3 style="margin-bottom: 1rem; font-size: 1rem;">Total ARR</h3>
+                        <div class="stat-value" id="report-total-arr">AED 0</div>
+                        <div class="stat-trend trend-up">
+                            ↑ 15% from last quarter
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3 style="margin-bottom: 1rem; font-size: 1rem;">Average Deal Value</h3>
+                        <div class="stat-value" id="report-avg-deal">AED 0</div>
+                        <div class="stat-trend trend-up">
+                            ↑ 12% from last quarter
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3 style="margin-bottom: 1rem; font-size: 1rem;">Win Rate</h3>
+                        <div class="stat-value">45%</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <h3 style="margin-bottom: 1rem; font-size: 1rem;">Total RVMs Deployed</h3>
+                        <div class="stat-value" id="report-total-rvms">0</div>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h2 class="section-title" style="margin-bottom: 1.5rem;">Pipeline by Stage</h2>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Stage</th>
+                                <th>Number of Deals</th>
+                                <th>Total Value</th>
+                                <th>ARR Forecast</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pipeline-body">
+                            <tr>
+                                <td>Agreement</td>
+                                <td id="stage-agreement-count">0</td>
+                                <td id="stage-agreement-value">AED 0</td>
+                                <td id="stage-agreement-arr">AED 0</td>
+                            </tr>
+                            <tr>
+                                <td>Proposal</td>
+                                <td id="stage-proposal-count">0</td>
+                                <td id="stage-proposal-value">AED 0</td>
+                                <td id="stage-proposal-arr">AED 0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="view-content" id="settings-view">
+                <div class="header">
+                    <h1>Settings</h1>
+                </div>
+                <div class="content-section">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚙️</div>
+                        <h3>Settings</h3>
+                        <p>Configure your CRM preferences</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Deal Modal -->
+    <div class="modal" id="add-deal-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Deal</h2>
+                <button class="modal-close" onclick="closeModal('add-deal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="deal-form" onsubmit="addDeal(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Quarter *</label>
+                            <input type="text" name="quarter" required placeholder="e.g., Q4+ 2025">
+                        </div>
+                        <div class="form-group">
+                            <label>Opportunity Name *</label>
+                            <input type="text" name="opportunity" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Country *</label>
+                            <select name="country" required>
+                                <option value="">Select Country</option>
+                                <option value="UAE">UAE</option>
+                                <option value="Saudi Arabia">Saudi Arabia</option>
+                                <option value="Egypt">Egypt</option>
+                                <option value="Qatar">Qatar</option>
+                                <option value="Kuwait">Kuwait</option>
+                                <option value="Bahrain">Bahrain</option>
+                                <option value="Oman">Oman</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Type *</label>
+                            <select name="renewalNew" required>
+                                <option value="New">New</option>
+                                <option value="Renewal">Renewal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Subscription Type *</label>
+                            <select name="subscriptionType" required>
+                                <option value="Recurring">Recurring</option>
+                                <option value="One-time">One-time</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Forecast Status *</label>
+                            <select name="forecastStatus" required>
+                                <option value="Forecast">Forecast</option>
+                                <option value="Actual">Actual</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Status *</label>
+                            <select name="paymentStatus" required>
+                                <option value="Not Paid">Not Paid</option>
+                                <option value="Paid">Paid</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Stage *</label>
+                            <select name="stage" required>
+                                <option value="Agreement">Agreement</option>
+                                <option value="Proposal">Proposal</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Number of Indoor RVMs</label>
+                            <input type="number" name="indoorRVMs" min="0" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Outdoor RVMs</label>
+                            <input type="number" name="outdoorRVMs" min="0" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Rental Value per Month (Indoor) - AED</label>
+                            <input type="number" name="rentalIndoor" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Rental Value per Month (Outdoor) - AED</label>
+                            <input type="number" name="rentalOutdoor" min="0" step="0.01" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label>Contract Duration (months)</label>
+                            <input type="number" name="contractDuration" min="0" value="12">
+                        </div>
+                        <div class="form-group">
+                            <label>ARR Actual - AED</label>
+                            <input type="number" name="arrActual" min="0" step="0.01" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label>ARR Forecast - AED</label>
+                            <input type="number" name="arrForecast" min="0" step="0.01" value="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea name="notes"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('add-deal')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Deal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Contact Modal -->
+    <div class="modal" id="add-contact-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Contact</h2>
+                <button class="modal-close" onclick="closeModal('add-contact')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="contact-form" onsubmit="addContact(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" name="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" name="lastName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" name="email" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Phone</label>
+                            <input type="tel" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label>Company *</label>
+                            <input type="text" name="company" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input type="text" name="role" placeholder="e.g., CEO, Manager">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea name="notes"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('add-contact')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Contact</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Task Modal -->
+    <div class="modal" id="add-task-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Task</h2>
+                <button class="modal-close" onclick="closeModal('add-task')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="task-form" onsubmit="addTask(event)">
+                    <div class="form-group">
+                        <label>Task Name *</label>
+                        <input type="text" name="taskName" required>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Related Deal</label>
+                            <input type="text" name="relatedDeal" placeholder="Deal name">
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select name="priority">
+                                <option value="Low">Low</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Due Date</label>
+                            <input type="date" name="dueDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select name="status">
+                                <option value="Pending">Pending</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('add-task')">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage
+        let contacts = [];
+        let deals = [];
+        let tasks = [];
+
+        // Load from localStorage
+        function loadData() {
+            const savedContacts = localStorage.getItem('crm_contacts');
+            const savedDeals = localStorage.getItem('crm_deals');
+            const savedTasks = localStorage.getItem('crm_tasks');
+            
+            if (savedContacts) contacts = JSON.parse(savedContacts);
+            if (savedDeals) deals = JSON.parse(savedDeals);
+            if (savedTasks) tasks = JSON.parse(savedTasks);
+        }
+
+        // Save to localStorage
+        function saveData() {
+            localStorage.setItem('crm_contacts', JSON.stringify(contacts));
+            localStorage.setItem('crm_deals', JSON.stringify(deals));
+            localStorage.setItem('crm_tasks', JSON.stringify(tasks));
+        }
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const view = this.dataset.view;
+                switchView(view);
+                
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        function switchView(view) {
+            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
+            document.getElementById(view + '-view').classList.add('active');
+        }
+
+        // Modal Functions
+        function openModal(modalName) {
+            document.getElementById(modalName + '-modal').classList.add('active');
+        }
+
+        function closeModal(modalName) {
+            document.getElementById(modalName + '-modal').classList.remove('active');
+        }
+
+        // Close modal on outside click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // Deal Functions
+        function addDeal(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            const indoorRVMs = parseInt(formData.get('indoorRVMs')) || 0;
+            const outdoorRVMs = parseInt(formData.get('outdoorRVMs')) || 0;
+            const rentalIndoor = parseFloat(formData.get('rentalIndoor')) || 0;
+            const rentalOutdoor = parseFloat(formData.get('rentalOutdoor')) || 0;
+            const contractDuration = parseInt(formData.get('contractDuration')) || 12;
+            
+            // Calculate pipeline value (monthly rental * contract duration)
+            const pipelineValue = ((indoorRVMs * rentalIndoor) + (outdoorRVMs * rentalOutdoor)) * contractDuration;
+            
+            const deal = {
+                id: Date.now(),
+                quarter: formData.get('quarter'),
+                opportunity: formData.get('opportunity'),
+                country: formData.get('country'),
+                renewalNew: formData.get('renewalNew'),
+                subscriptionType: formData.get('subscriptionType'),
+                forecastStatus: formData.get('forecastStatus'),
+                paymentStatus: formData.get('paymentStatus'),
+                stage: formData.get('stage'),
+                indoorRVMs: indoorRVMs,
+                outdoorRVMs: outdoorRVMs,
+                rentalIndoor: rentalIndoor,
+                rentalOutdoor: rentalOutdoor,
+                contractDuration: contractDuration,
+                pipelineValue: pipelineValue,
+                arrActual: parseFloat(formData.get('arrActual')) || 0,
+                arrForecast: parseFloat(formData.get('arrForecast')) || 0,
+                notes: formData.get('notes'),
+                createdAt: new Date().toISOString()
+            };
+            
+            deals.push(deal);
+            saveData();
+            renderDeals();
+            updateStats();
+            updatePipelineReport();
+            form.reset();
+            closeModal('add-deal');
+        }
+
+        function renderDeals(filter = {}) {
+            const tbody = document.getElementById('deals-body');
+            const dashboardTbody = document.getElementById('dashboard-deals-body');
+            
+            let filteredDeals = deals;
+            
+            if (filter.stage && filter.stage !== 'all') {
+                filteredDeals = filteredDeals.filter(d => d.stage === filter.stage);
+            }
+            if (filter.type && filter.type !== 'all') {
+                filteredDeals = filteredDeals.filter(d => d.renewalNew === filter.type);
+            }
+            if (filter.forecast && filter.forecast !== 'all') {
+                filteredDeals = filteredDeals.filter(d => d.forecastStatus === filter.forecast);
+            }
+            
+            if (filteredDeals.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="17">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">💼</div>
+                                <h3>No deals found</h3>
+                                <p>Create your first deal to start tracking</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = filteredDeals.map(deal => `
+                    <tr>
+                        <td><span class="value-text">${deal.quarter}</span></td>
+                        <td><span class="value-text">${deal.opportunity}</span></td>
+                        <td>${deal.country}</td>
+                        <td><span class="badge badge-${deal.renewalNew.toLowerCase()}">${deal.renewalNew}</span></td>
+                        <td><span class="badge badge-${deal.subscriptionType.toLowerCase()}">${deal.subscriptionType}</span></td>
+                        <td><span class="badge badge-${deal.forecastStatus.toLowerCase()}">${deal.forecastStatus}</span></td>
+                        <td><span class="badge badge-${deal.paymentStatus.replace(' ', '-').toLowerCase()}">${deal.paymentStatus}</span></td>
+                        <td><span class="badge badge-${deal.stage.toLowerCase()}">${deal.stage}</span></td>
+                        <td>${deal.indoorRVMs}</td>
+                        <td>${deal.outdoorRVMs}</td>
+                        <td>AED ${deal.rentalIndoor.toLocaleString()}</td>
+                        <td>AED ${deal.rentalOutdoor.toLocaleString()}</td>
+                        <td>${deal.contractDuration} months</td>
+                        <td><span class="value-text">AED ${deal.pipelineValue.toLocaleString()}</span></td>
+                        <td>AED ${deal.arrActual.toLocaleString()}</td>
+                        <td>AED ${deal.arrForecast.toLocaleString()}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="deleteDeal(${deal.id})" title="Delete">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Update dashboard recent deals (last 5)
+            const recentDeals = deals.slice(-5).reverse();
+            if (recentDeals.length > 0) {
+                dashboardTbody.innerHTML = recentDeals.map(deal => `
+                    <tr>
+                        <td><span class="value-text">${deal.quarter}</span></td>
+                        <td><span class="value-text">${deal.opportunity}</span></td>
+                        <td>${deal.country}</td>
+                        <td><span class="badge badge-${deal.renewalNew.toLowerCase()}">${deal.renewalNew}</span></td>
+                        <td><span class="badge badge-${deal.stage.toLowerCase()}">${deal.stage}</span></td>
+                        <td>${deal.indoorRVMs}</td>
+                        <td>${deal.outdoorRVMs}</td>
+                        <td><span class="value-text">AED ${deal.pipelineValue.toLocaleString()}</span></td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn" onclick="switchView('deals')" title="View">👁️</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        function deleteDeal(id) {
+            if (confirm('Are you sure you want to delete this deal?')) {
+                deals = deals.filter(d => d.id !== id);
+                saveData();
+                renderDeals();
+                updateStats();
+                updatePipelineReport();
+            }
+        }
+
+        function filterDeals() {
+            const stage = document.getElementById('deal-stage-filter').value;
+            const type = document.getElementById('deal-type-filter').value;
+            const forecast = document.getElementById('deal-forecast-filter').value;
+            
+            renderDeals({ stage, type, forecast });
+        }
+
+        // Contact Functions
+        function addContact(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            const contact = {
+                id: Date.now(),
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                company: formData.get('company'),
+                role: formData.get('role'),
+                notes: formData.get('notes'),
+                createdAt: new Date().toISOString()
+            };
+            
+            contacts.push(contact);
+            saveData();
+            renderContacts();
+            form.reset();
+            closeModal('add-contact');
+        }
+
+        function renderContacts() {
+            const tbody = document.getElementById('contacts-body');
+            
+            if (contacts.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">👥</div>
+                                <h3>No contacts found</h3>
+                                <p>Add your first contact to get started</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = contacts.map(contact => {
+                    const initials = (contact.firstName[0] + contact.lastName[0]).toUpperCase();
+                    const color = getRandomColor(contact.id);
+                    
+                    return `
+                        <tr>
+                            <td>
+                                <div class="contact-info">
+                                    <div class="avatar" style="background: ${color}">${initials}</div>
+                                    <div class="contact-details">
+                                        <h4>${contact.firstName} ${contact.lastName}</h4>
+                                        <p>${contact.role || 'Contact'}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${contact.company}</td>
+                            <td>${contact.email}</td>
+                            <td>${contact.phone || '-'}</td>
+                            <td>${contact.role || '-'}</td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="deleteContact(${contact.id})" title="Delete">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function deleteContact(id) {
+            if (confirm('Are you sure you want to delete this contact?')) {
+                contacts = contacts.filter(c => c.id !== id);
+                saveData();
+                renderContacts();
+            }
+        }
+
+        // Task Functions
+        function addTask(e) {
+            e.preventDefault();
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            const task = {
+                id: Date.now(),
+                taskName: formData.get('taskName'),
+                relatedDeal: formData.get('relatedDeal'),
+                priority: formData.get('priority'),
+                dueDate: formData.get('dueDate'),
+                status: formData.get('status'),
+                description: formData.get('description'),
+                createdAt: new Date().toISOString()
+            };
+            
+            tasks.push(task);
+            saveData();
+            renderTasks();
+            updateStats();
+            form.reset();
+            closeModal('add-task');
+        }
+
+        function renderTasks() {
+            const tbody = document.getElementById('tasks-body');
+            
+            if (tasks.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-state-icon">✓</div>
+                                <h3>No tasks found</h3>
+                                <p>Add a task to stay organized</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = tasks.map(task => {
+                    const priorityColors = {
+                        'High': 'color: #ef4444; font-weight: 600;',
+                        'Medium': 'color: #f59e0b; font-weight: 600;',
+                        'Low': 'color: #10b981; font-weight: 600;'
+                    };
+                    const dueDate = task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '-';
+                    const statusBadge = task.status === 'Completed' ? 'badge-actual' : 
+                                       task.status === 'In Progress' ? 'badge-forecast' : 'badge-new';
+                    
+                    return `
+                        <tr>
+                            <td><span class="value-text">${task.taskName}</span></td>
+                            <td>${task.relatedDeal || '-'}</td>
+                            <td><span style="${priorityColors[task.priority]}">${task.priority}</span></td>
+                            <td>${dueDate}</td>
+                            <td><span class="badge ${statusBadge}">${task.status}</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn" onclick="toggleTaskStatus(${task.id})" title="Toggle Status">✓</button>
+                                    <button class="action-btn" onclick="deleteTask(${task.id})" title="Delete">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        function toggleTaskStatus(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.status = task.status === 'Completed' ? 'Pending' : 'Completed';
+                saveData();
+                renderTasks();
+                updateStats();
+            }
+        }
+
+        function deleteTask(id) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                tasks = tasks.filter(t => t.id !== id);
+                saveData();
+                renderTasks();
+                updateStats();
+            }
+        }
+
+        // Stats Updates
+        function updateStats() {
+            const totalPipeline = deals.reduce((sum, deal) => sum + deal.pipelineValue, 0);
+            document.getElementById('total-pipeline').textContent = 'AED ' + totalPipeline.toLocaleString();
+            
+            const activeDealsCount = deals.length;
+            document.getElementById('active-deals').textContent = activeDealsCount;
+            
+            const totalARRForecast = deals.reduce((sum, deal) => sum + deal.arrForecast, 0);
+            document.getElementById('arr-forecast').textContent = 'AED ' + totalARRForecast.toLocaleString();
+            
+            const pendingTasks = tasks.filter(t => t.status !== 'Completed').length;
+            document.getElementById('pending-tasks').textContent = pendingTasks;
+        }
+
+        function updatePipelineReport() {
+            const stages = ['Agreement', 'Proposal'];
+            
+            stages.forEach(stage => {
+                const stageDeals = deals.filter(d => d.stage === stage);
+                const stageValue = stageDeals.reduce((sum, d) => sum + d.pipelineValue, 0);
+                const stageARR = stageDeals.reduce((sum, d) => sum + d.arrForecast, 0);
+                const stageName = stage.toLowerCase();
+                
+                const countEl = document.getElementById(`stage-${stageName}-count`);
+                const valueEl = document.getElementById(`stage-${stageName}-value`);
+                const arrEl = document.getElementById(`stage-${stageName}-arr`);
+                
+                if (countEl) countEl.textContent = stageDeals.length;
+                if (valueEl) valueEl.textContent = 'AED ' + stageValue.toLocaleString();
+                if (arrEl) arrEl.textContent = 'AED ' + stageARR.toLocaleString();
+            });
+            
+            // Update report stats
+            const totalARR = deals.reduce((sum, d) => sum + d.arrActual, 0);
+            document.getElementById('report-total-arr').textContent = 'AED ' + totalARR.toLocaleString();
+            
+            const avgDeal = deals.length > 0 ? 
+                deals.reduce((sum, d) => sum + d.pipelineValue, 0) / deals.length : 0;
+            document.getElementById('report-avg-deal').textContent = 'AED ' + Math.round(avgDeal).toLocaleString();
+            
+            const totalRVMs = deals.reduce((sum, d) => sum + d.indoorRVMs + d.outdoorRVMs, 0);
+            document.getElementById('report-total-rvms').textContent = totalRVMs;
+        }
+
+        // Helper Functions
+        function getRandomColor(seed) {
+            const colors = [
+                '#3b82f6', '#10b981', '#f59e0b', '#ef4444', 
+                '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'
+            ];
+            return colors[seed % colors.length];
+        }
+
+        // Search functionality
+        document.getElementById('deal-search')?.addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredDeals = deals.filter(d => 
+                d.opportunity.toLowerCase().includes(searchTerm) ||
+                d.country.toLowerCase().includes(searchTerm) ||
+                d.quarter.toLowerCase().includes(searchTerm)
+            );
+            
+            const tbody = document.getElementById('deals-body');
+            if (filteredDeals.length === 0 && searchTerm) {
+                tbody.innerHTML = `
+                    <tr><td colspan="17">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <h3>No results found</h3>
+                        </div>
+                    </td></tr>
+                `;
+            } else if (searchTerm) {
+                renderDealsFromArray(filteredDeals, tbody);
+            } else {
+                renderDeals();
+            }
+        });
+
+        function renderDealsFromArray(dealsArray, tbody) {
+            tbody.innerHTML = dealsArray.map(deal => `
+                <tr>
+                    <td><span class="value-text">${deal.quarter}</span></td>
+                    <td><span class="value-text">${deal.opportunity}</span></td>
+                    <td>${deal.country}</td>
+                    <td><span class="badge badge-${deal.renewalNew.toLowerCase()}">${deal.renewalNew}</span></td>
+                    <td><span class="badge badge-${deal.subscriptionType.toLowerCase()}">${deal.subscriptionType}</span></td>
+                    <td><span class="badge badge-${deal.forecastStatus.toLowerCase()}">${deal.forecastStatus}</span></td>
+                    <td><span class="badge badge-${deal.paymentStatus.replace(' ', '-').toLowerCase()}">${deal.paymentStatus}</span></td>
+                    <td><span class="badge badge-${deal.stage.toLowerCase()}">${deal.stage}</span></td>
+                    <td>${deal.indoorRVMs}</td>
+                    <td>${deal.outdoorRVMs}</td>
+                    <td>AED ${deal.rentalIndoor.toLocaleString()}</td>
+                    <td>AED ${deal.rentalOutdoor.toLocaleString()}</td>
+                    <td>${deal.contractDuration} months</td>
+                    <td><span class="value-text">AED ${deal.pipelineValue.toLocaleString()}</span></td>
+                    <td>AED ${deal.arrActual.toLocaleString()}</td>
+                    <td>AED ${deal.arrForecast.toLocaleString()}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn" onclick="deleteDeal(${deal.id})" title="Delete">🗑️</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize
+        loadData();
+        renderDeals();
+        renderContacts();
+        renderTasks();
+        updateStats();
+        updatePipelineReport();
+    </script>
+</body>
+</html>
